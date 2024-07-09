@@ -16,9 +16,9 @@ namespace ECommerce.CatalogService.Controllers
         }
 
         [HttpGet()]
-        public IActionResult GetById(int id)
+        public async Task<ActionResult> GetById(int id)
         {
-            return Ok(_productService.GetProduct(id));
+            return Ok(await _productService.GetProduct(id));
         }
 
         [HttpGet("all")]
@@ -52,6 +52,21 @@ namespace ECommerce.CatalogService.Controllers
                 return Ok($"Deleted product with Id: {productId}");
             else
                 return BadRequest("Failed to delete");
+        }
+
+        [HttpPost("update")]
+        public async Task<ActionResult> Update([FromBody] Product product)
+        {
+            try
+            {
+                await _productService.UpdateProduct(product);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+            return Ok();
         }
     }
 }

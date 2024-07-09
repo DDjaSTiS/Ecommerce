@@ -27,14 +27,14 @@ namespace ECommerce.CatalogService.Services
             return await _repository.GetAll();
         }
 
-        public Product? GetProduct(int productId)
+        public async Task<Product?> GetProduct(int productId)
         {
-            return _repository.GetProduct(productId);
+            return await _repository.GetProduct(productId);
         }
 
-        public void UpdateProduct(Product product)
+        public async Task UpdateProduct(Product product)
         {
-            throw new NotImplementedException();
+            await _repository.Update(product);
         }
     }
 }
