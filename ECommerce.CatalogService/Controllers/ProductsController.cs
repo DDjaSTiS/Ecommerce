@@ -32,13 +32,10 @@ namespace ECommerce.CatalogService.Controllers
         public async Task Create()
         {
             List<Task> tasks = new List<Task>();
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 1000; i++)
             {
                 var prod = new Product();
-                if (i % 5 == 0 && i != 0)
-                    tasks.Add(_productService.DeleteProduct(i / 5));
-                else
-                    tasks.Add(_productService.CreateProduct(prod));                
+                tasks.Add(_productService.CreateProduct(prod));                
             }
 
             await Task.WhenAll(tasks);
@@ -66,6 +63,13 @@ namespace ECommerce.CatalogService.Controllers
                 return BadRequest(ex.Message);
             }
 
+            return Ok();
+        }
+
+        [HttpPost("updateAll")]
+        public async Task<ActionResult> UpdateAll()
+        {
+            await _productService.UpdateAll();
             return Ok();
         }
     }

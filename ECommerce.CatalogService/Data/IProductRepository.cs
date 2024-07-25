@@ -9,5 +9,6 @@ namespace ECommerce.CatalogService.Data
         Task<int?> Delete(int productId);
         Task<Product?> GetProduct(int productId);
         Task<IEnumerable<Product>> GetAll();
+        Task UpdateAll();
     }
 }

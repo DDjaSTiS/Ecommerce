@@ -85,5 +85,15 @@ namespace ECommerce.CatalogService.Data
                 _semaphoreSlim.Release();
             }
         }
+
+        public async Task UpdateAll()
+        {
+            await Parallel.ForEachAsync(_products.Values, async (product, cancellationToken) =>
+            {
+                product.Price = 1000000;
+                Thread.Sleep(10);
+                await Task.FromResult(product);
+            });
+        }
     }
 }

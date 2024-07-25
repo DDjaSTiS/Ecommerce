@@ -32,6 +32,11 @@ namespace ECommerce.CatalogService.Services
             return await _repository.GetProduct(productId);
         }
 
+        public async Task UpdateAll()
+        {
+            await _repository.UpdateAll();
+        }
+
         public async Task UpdateProduct(Product product)
         {
             await _repository.Update(product);

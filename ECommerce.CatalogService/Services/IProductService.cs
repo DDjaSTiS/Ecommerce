@@ -9,5 +9,6 @@ namespace ECommerce.CatalogService.Services
         Task UpdateProduct(Product product);
         Task<int?> DeleteProduct(int productId);
         Task CreateProduct(Product product);
+        Task UpdateAll();
     }
 }
