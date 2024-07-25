@@ -3,11 +3,10 @@ using System.Collections.Concurrent;
 
 namespace ECommerce.CatalogService.Data
 {
-    public class ProductRepository : IProductRepository
+    public class InMemoryProductRepository : IProductRepository
     {
         private int _counter = 4;
         private readonly SemaphoreSlim _semaphoreSlim = new SemaphoreSlim(1, 1);
-        private static object _locker = new object();
 
         private ConcurrentDictionary<int, Product> _products =
             new ConcurrentDictionary<int, Product>(new List<KeyValuePair<int, Product>>
@@ -28,7 +27,6 @@ namespace ECommerce.CatalogService.Data
                     throw new Exception("Failed to add");
                 }
 
-                await Task.Delay(100);
                 Interlocked.Increment(ref _counter);
             }
             finally 
@@ -48,7 +46,6 @@ namespace ECommerce.CatalogService.Data
                     throw new Exception("Failed to delete");
                 }
 
-                await Task.Delay(500);
                 deletedProductId = deletedProduct.Id;
             }
             finally
@@ -59,37 +56,28 @@ namespace ECommerce.CatalogService.Data
             return deletedProductId;
         }
 
-        public async Task<IEnumerable<Product>> GetAll()
+        public Task<IEnumerable<Product>> GetAll()
         {
-            return await Task.Run(() => _products.Values);
+            return Task.FromResult<IEnumerable<Product>>(_products.Values);
         }
 
-        public async Task<Product?> GetProduct(int productId)
+        public Task<Product?> GetProduct(int productId)
         {
-            Product? result = null;
-            await _semaphoreSlim.WaitAsync();
-            try
-            {
-                if (_products.TryGetValue(productId, out var product))
-                    result = product;
-                else
-                    throw new Exception("Failed to get");
-            }
-            finally
-            {
-                _semaphoreSlim.Release();
-            }
+            if (!_products.TryGetValue(productId, out var product))
+                throw new Exception("Failed to get");
 
-            return result;
+            return Task.FromResult<Product?>(product);
         }
 
         public async Task Update(Product productRequest)
         {
-            var productToUpdate = await GetProduct(productRequest.Id);
             await _semaphoreSlim.WaitAsync();
             try
             {
-                if (!_products.TryUpdate(productRequest.Id, productRequest, productToUpdate!))
+                if (!_products.TryGetValue(productRequest.Id, out Product product))
+                    throw new Exception("Id not found");
+
+                if (!_products.TryUpdate(productRequest.Id, productRequest, product!))
                     throw new Exception("Failed to update");
             }
             finally 
